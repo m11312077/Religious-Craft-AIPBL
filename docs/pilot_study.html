@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台灣宗教工藝傳承危機：議題複雜性與利害關係人分析 — Pilot Study</title>
+<style>
+  :root {
+    --text: #1a1a1a; --muted: #555; --light: #888; --border: #ddd;
+    --accent: #8B4513; --accent-light: #f5ede4;
+    --teal: #2a7a6e; --teal-light: #e8f4f2;
+    --amber: #8a5c00; --amber-light: #fdf5e0;
+    --red: #8a2020; --red-light: #fdf0f0;
+    --purple: #5a3a8a; --purple-light: #f0ebfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif; color: var(--text); background: #fafaf8; line-height: 1.85; font-size: 15px; }
+  .cover { background: var(--accent); color: #fff; padding: 64px 40px 52px; text-align: center; }
+  .cover .label { font-family: "Noto Sans TC", sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.75; margin-bottom: 20px; }
+  .cover h1 { font-size: 28px; font-weight: 700; line-height: 1.4; margin-bottom: 14px; }
+  .cover .subtitle { font-size: 16px; opacity: 0.85; margin-bottom: 32px; }
+  .cover .meta { font-family: "Noto Sans TC", sans-serif; font-size: 12px; opacity: 0.65; line-height: 2.1; }
+  .container { max-width: 820px; margin: 0 auto; padding: 0 32px 80px; }
+  .toc { background: var(--accent-light); border-left: 3px solid var(--accent); padding: 26px 30px; margin: 40px 0; border-radius: 0 6px 6px 0; }
+  .toc h2 { font-family: "Noto Sans TC", sans-serif; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; border: none; padding: 0; }
+  .toc ol { padding-left: 20px; }
+  .toc li { font-family: "Noto Sans TC", sans-serif; font-size: 13px; margin-bottom: 6px; color: var(--muted); }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  h2 { font-size: 20px; font-weight: 700; margin: 52px 0 16px; padding-bottom: 9px; border-bottom: 1.5px solid var(--border); color: #1a1a1a; }
+  h3 { font-family: "Noto Sans TC", sans-serif; font-size: 15px; font-weight: 700; margin: 30px 0 10px; color: var(--accent); }
+  p { margin-bottom: 15px; }
+  .callout { padding: 15px 20px; border-radius: 6px; margin: 20px 0; font-family: "Noto Sans TC", sans-serif; font-size: 13.5px; line-height: 1.72; }
+  .callout strong { display: block; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .callout.info  { background: var(--teal-light);   border-left: 3px solid var(--teal);   } .callout.info  strong { color: var(--teal);   }
+  .callout.warn  { background: var(--amber-light);  border-left: 3px solid var(--amber);  } .callout.warn  strong { color: var(--amber);  }
+  .callout.alert { background: var(--red-light);    border-left: 3px solid var(--red);    } .callout.alert strong { color: var(--red);    }
+  .callout.note  { background: var(--purple-light); border-left: 3px solid var(--purple); } .callout.note  strong { color: var(--purple); }
+  cite { font-style: normal; font-size: 11px; vertical-align: super; font-family: "Noto Sans TC", sans-serif; color: var(--accent); font-weight: 600; }
+  .stakeholder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
+  .stakeholder-card { border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; background: #fff; }
+  .stakeholder-card .role { font-family: "Noto Sans TC", sans-serif; font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--light); margin-bottom: 5px; }
+  .stakeholder-card .name { font-family: "Noto Sans TC", sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .stakeholder-card p { font-family: "Noto Sans TC", sans-serif; font-size: 12.5px; color: var(--muted); margin: 0; line-height: 1.6; }
+  .stakeholder-card .tension { margin-top: 8px; font-size: 11px; color: var(--red); background: var(--red-light); padding: 4px 8px; border-radius: 4px; display: inline-block; font-family: "Noto Sans TC", sans-serif; }
+  .gap-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-family: "Noto Sans TC", sans-serif; font-size: 13px; }
+  .gap-table th { background: var(--accent); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+  .gap-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+  .gap-table tr:nth-child(even) td { background: #f9f9f7; }
+  .tag { font-size: 11px; padding: 2px 7px; border-radius: 10px; display: inline-block; font-weight: 600; font-family: "Noto Sans TC", sans-serif; }
+  .tag.exists { background: #e0f0e8; color: #276040; } .tag.gap { background: var(--red-light); color: var(--red); }
+  .references { background: #f5f5f3; border-radius: 8px; padding: 26px 30px; margin-top: 48px; }
+  .references h2 { border: none; margin-top: 0; font-size: 16px; padding: 0; }
+  .references ol { padding-left: 20px; font-family: "Noto Sans TC", sans-serif; font-size: 12.5px; line-height: 1.75; color: var(--muted); }
+  .references li { margin-bottom: 8px; }
+  .references a { color: var(--accent); }
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+  @media (max-width: 600px) { .stakeholder-grid { grid-template-columns: 1fr; } .cover { padding: 44px 24px; } .container { padding: 0 20px 60px; } }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="label">PBL Pilot Study — 初稿</div>
+  <h1>台灣宗教工藝傳承危機：<br>議題複雜性與利害關係人分析</h1>
+  <div class="subtitle">以非遺匠人困境與科技能否有效介入為核心提問</div>
+  <div class="meta">
+    研究日期：2026 年 3 月<br>
+    資料來源：政府文件、學術文獻、新聞報導<br>
+    本報告為 PBL 初步探索用途，非正式學術論文
+  </div>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h2>目錄</h2>
+  <ol>
+    <li><a href="#s1">研究背景與動機</a></li>
+    <li><a href="#s2">台灣宗教工藝的現況規模與類型</a></li>
+    <li><a href="#s3">傳承危機的多層成因</a></li>
+    <li><a href="#s4">政策保護框架與局限</a></li>
+    <li><a href="#s5">工藝真實性的本體論困境</a></li>
+    <li><a href="#s6">利害關係人分析</a></li>
+    <li><a href="#s7">科技介入：可能性、缺口與風險</a></li>
+    <li><a href="#s8">議題複雜性摘要</a></li>
+    <li><a href="#refs">參考資料</a></li>
+  </ol>
+</div>
+
+
+<h2 id="s1">一、研究背景與動機</h2>
+
+<p>台灣的宗教工藝是一個特殊的非物質文化遺產（ICH）節點：它既不純屬「藝術」，也不純屬「宗教」，而是兩者相互依存的產物。廟宇工藝師（如剪黏匠師、交趾陶匠師、木雕師）的技藝，是透過宗教場域的需求而得以存活的；反過來，廟宇的神聖美學也仰賴匠師來維繫。這種共生關係，使得傳承問題比一般工藝更加複雜：它不只是技術的消失，也是文化信仰符號體系的崩解。</p>
+
+<p>本報告嘗試梳理這個議題的全貌，核心提問是：科技——尤其是 AI——能否有效介入宗教工藝的傳承困境？在回答這個問題之前，必須先充分理解問題的複雜性：在現有科技介入方案大量湧現的同時，為何傳承斷層的問題依然持續惡化？</p>
+
+<div class="callout info">
+  <strong>研究範疇說明</strong>
+  本報告涵蓋台灣多元信仰脈絡下的宗教工藝，包含：漢人民間信仰廟宇工藝（剪黏、交趾陶、木雕、粧佛、廟宇彩繪）、佛道兩教祭儀器具（法器、梵鐘、木魚、燈篙）、以及原住民泛靈信仰祭儀器物（陶壺、琉璃珠、祖靈柱木雕）。具有信仰脈絡的刺繡（如神袍繡品）亦在討論範圍內。本報告主要排除純服飾類工藝及一般生活器物工藝，因其信仰語境較為薄弱，傳承困境的結構有所不同。
+</div>
+
+
+<h2 id="s2">二、台灣宗教工藝的現況規模與類型</h2>
+
+<h3>2.1 廟宇密度與工藝的生存場域</h3>
+
+<p>台灣是全球廟宇密度最高的地方之一，全台超過 12,000 座寺廟、宮廟，幾乎每一座都有剪黏、彩繪、木雕或泥塑的裝飾工程。<cite>[1]</cite> 廟宇不只是信仰中心，更是傳統工藝最主要的「需求端」與「傳承場域」。一旦廟宇的工程委發模式改變，對匠師生態的衝擊是結構性的，而非個案性的。文化部文化資產局截至 2021 年共認定全台無形文資 607 案，其中國家級重要傳統工藝 29 案。<cite>[6]</cite></p>
+
+<h3>2.2 漢人民間信仰廟宇工藝</h3>
+
+<p><strong>剪黏（Chien-nien）</strong>：將陶瓷碗片或玻璃片裁剪後黏貼於灰泥粗胚，製成廟宇屋脊裝飾。<cite>[2]</cite> 值得注意的是，此藝術雖發源於中國，但因文化大革命的破壞，對岸幾近失傳，反而在台灣得以保存與發展。<cite>[3]</cite> <strong>交趾陶</strong>融合捏塑、繪畫、燒陶三項專業，學習門檻極高。<cite>[4]</cite> <strong>粧佛</strong>（神像雕刻）包含木雕塑形、打底、彩繪一體，涉及對宗教圖像學的深厚理解，刀法風格因師承有顯著差異，是高度個人化的隱性知識體系。<strong>廟宇彩繪</strong>要求兼具美學技術與宗教題材詮釋能力，且需在特殊場域（高空、潮濕環境）作業，對身體技術的要求特殊。</p>
+
+<p><strong>淋塘</strong>是一個必須單獨討論的工業替代品：民國七○年代起，工廠以模具大量生產預製陶瓷片，可直接黏貼、無須手工裁剪。<cite>[5]</cite> 成本低廉、施工快速，已脫離傳統剪黏的工藝範疇，卻成為廟方大量採用的替代方案，是匠師生計最直接的衝擊來源之一。</p>
+
+<h3>2.3 佛道兩教祭儀器具</h3>
+
+<p>佛教與道教使用的法器（梵鐘、磬、木魚、鐃鈸、金剛杵等）在製作上各有專門工藝。<cite>[7]</cite> 以銅器法器為例，音聲品質取決於合金配比、鑄造工法與後期打磨，至今手工銅器仍具有工廠製品無法完全替代的聲學特性。<cite>[8]</cite> 木魚等木製法器同樣仰賴對木料特性的深度理解，以及雕鑿出特定共鳴腔體的身體技術。<cite>[9]</cite></p>
+
+<p><strong>燈篙</strong>是另一個值得特別關注的案例。燈篙為中元普渡儀式中豎立的高竹篙，其製作與搭建涉及特定的技藝與儀式知識，屬於信仰場域中不可分割的一環。<cite>[10]</cite> 然而，戰後政府以「節約」為由勸導廟宇不再豎立燈篙，導致許多地區的儀式傳統與相關工藝技術同步萎縮，目前僅基隆等少數地方維持完整傳統。這是一個工藝被政治力直接壓縮的具體歷史案例，說明傳承困境的成因並不限於市場或技術層面。</p>
+
+<h3>2.4 原住民泛靈信仰祭儀器物</h3>
+
+<p>台灣原住民族傳統信仰為泛靈信仰體系，認為天地萬物、自然現象與祖靈均有其靈性。<cite>[11]</cite> 在這個信仰框架下，許多器物本身即是神聖存在，製作行為具有儀式意義，而非單純的工藝生產。</p>
+
+<p><strong>排灣族陶壺（Reretan）</strong>是排灣族與魯凱族中最神聖的祭儀器物，兼具祭祀、聘禮與宇宙觀象徵等功能，壺上紋飾各具意涵（山形代表女子，雲形代表男子，菱形代表海洋）。<cite>[12]</cite> 然而陶壺的製作技術在 20 世紀中期幾乎完全失傳——以鄒族為例，日本學者鳥居龍藏 1907 年田野調查時，僅剩兩人懂得製陶技術，目前已無人知曉。排灣族陶壺則遲至 1982 年，才由藝術家遵循古法重現並傳授。<cite>[12]</cite> 技藝消失後再被搶救，但恢復的代價極高且往往不完整。<strong>琉璃珠</strong>為排灣族與魯凱族的聖物，代表身份地位與祖靈庇護，製作技術同樣曾面臨斷代危機，現今透過部分藝術家的努力有所復振。<strong>木雕祖靈柱</strong>是原住民各族在祭儀空間中設置的媒介物，卑南族藝術家哈古的木雕創作即根植於族群信仰與宇宙觀。<cite>[13]</cite></p>
+
+<div class="callout warn">
+  <strong>關鍵觀察</strong>
+  原住民祭儀器物與漢人廟宇工藝在知識主權結構上有根本差異：前者的技藝知識屬於部落集體，而非個人匠師；後者則屬於師傅個人或家族。這個差異對任何科技介入方案的設計邏輯都有重大影響，詳見第七章。
+</div>
+
+
+<h2 id="s3">三、傳承危機的多層成因</h2>
+
+<h3>3.1 匠人老化與斷代</h3>
+
+<p>台灣整體人口老化趨勢與工藝匠師斷代問題高度重疊。根據國家發展委員會推估，台灣已於 2025 年邁入超高齡社會（65 歲以上人口占 20%），<cite>[14]</cite> 而傳統工藝師傅的年齡結構往往更為老化。師徒制的傳承模式需要長達數年的全職投入，在現代社會的步調中極難維繫。<cite>[15]</cite> 部分老師傅甚至因擔心技術被學走而不願傳授，加上社會的文憑主義導向，使年輕人對傳統工藝普遍望而卻步。最終的結果是：隨著老藝匠凋零，技藝就此消失，不留紀錄。</p>
+
+<h3>3.2 師徒制的內部排除機制</h3>
+
+<p>傳承困境不只來自外部的市場萎縮，師徒制本身也存在結構性的排除邏輯。「傳男不傳女」、「傳內不傳外」等觀念在工藝圈仍普遍存在，構成制度性的入門障礙。師徒制研究指出，許多師父不願意收女性為徒，一是認為女性缺乏對長期專業生涯的承諾；二是在以男性主導的非正式網絡中，女性學徒難以獲得技術以外的「社會資本」——而在傳統工藝圈，這種非正式網絡往往是接案、轉介、累積聲望的主要管道。<cite>[16]</cite></p>
+
+<p>這裡有一個弔詭的現象：台灣文化部推動傳統工藝研習計畫時，女性參與比例遠高於男性——彩繪、捏塑等研習班學員中，女性占比達七成以上。<cite>[17]</cite> 這意味著「對工藝有興趣的女性」並不缺乏，缺乏的是被正式師徒體系接納、進而能以此為業的機制。興趣被轉化為「課程參與者」，而非「技藝繼承人」。此外，部分工藝家族視技藝為家族財產，不願傳授外人核心技術，長期而言縮小了可接觸技藝的人口基數，使傳承更加脆弱。</p>
+
+<div class="callout warn">
+  <strong>關鍵觀察</strong>
+  「師徒制」在傳統論述中常被視為需要被保護的傳承機制，但它本身同時也是一個排除機制。任何設計介入若只想強化師徒制，都需要先正視其內建的不平等。
+</div>
+
+<h3>3.3 隱性知識的外顯困境</h3>
+
+<p>宗教工藝技藝的核心，是大量「隱性知識」（tacit knowledge）：手感、力道、配色直覺、對宗教題材的文化理解，以及在廟宇高空環境作業的身體技術。這類知識難以透過文字或影像記錄完整傳遞，是數位化介入最難攻克的核心障礙。學術研究亦指出，無形文化遺產中「活的知識」——依靠身體傳遞、社會傳習、不斷演化的實踐——遠比記錄物件本身更難保護。<cite>[18]</cite></p>
+
+<h3>3.4 市場競爭壓力與量產替代</h3>
+
+<p>傳統工藝品製作周期長、成本高，使其在市場競爭中難以抗衡量產替代品。<cite>[19]</cite> 廟方在工程發包時，往往傾向選擇報價低廉的替代方案，導致本土匠師難以維持穩定的生計與接案量。這一循環持續壓縮匠師的存活空間，也使新人更難進入這個生態。</p>
+
+<h3>3.5 材料與產業鏈的系統性斷裂</h3>
+
+<p>傳承危機不只發生在「人」的層面，也發生在「物質條件」的層面。許多工藝依賴特定天然材料，隨著環境開發與氣候變遷，這些材料越來越難取得。台灣工藝文化產業的政策報告已明確指出整體產業出現「材料倚賴進口」的趨勢。<cite>[20]</cite> 更嚴峻的是產業鏈的連鎖斷裂：某些工藝需要上下游配合才能完成，當其中一個環節萎縮，整條工藝鏈就可能崩潰。<cite>[21]</cite> 即便找到了願意學習的繼承人，若材料或工具供應中斷，技藝依然無法持續。政府雖已啟動「臺灣工藝文化產業中長程計畫」，投入逾 28 億元，包含推動漆樹等材料的復育及建置「臺灣工藝基因庫」，<cite>[20]</cite> 但能否逆轉長期依賴進口的結構性問題，仍有待觀察。</p>
+
+<h3>3.6 宗教信仰的文化語境弱化</h3>
+
+<p>宗教工藝與一般非遺的重要差異，在於每一件作品都嵌入特定的宗教敘事中：人物造型、顏色配置、圖像排列都有其象徵意涵，且因廟宇、信仰系統的不同而有所差異。這意味著，即便技術層面被記錄保存，文化語境的傳遞仍是獨立且困難的問題。隨著年輕世代對宗教儀式與工藝背後的文化意義認知逐漸淡薄，農村與地方社區的「人地連結」也不斷下降，這個語境的流失速度，甚至可能快過技術本身的消失。</p>
+
+
+<h2 id="s4">四、政策保護框架與局限</h2>
+
+<h3>4.1 文化資產保存法框架</h3>
+
+<p>台灣現行的無形文化資產保護主要依據 2016 年大幅修正的《文化資產保存法》，由文化部文化資產局主管，涵蓋傳統表演藝術、傳統工藝、口述傳統、民俗、傳統知識與實踐五大類。<cite>[22]</cite> 截至 2021 年底，全國無形文資總計 607 案，國家級重要傳統工藝 29 案。<cite>[6]</cite> 補助制度的申請程序複雜，對缺乏行政資源的個人匠師不夠友善，<cite>[23]</cite> 且政策目標多集中在「保存」與「紀錄」，而非「再活化」或「降低學習門檻」，使政策介入往往停留在存檔層次。</p>
+
+<h3>4.2 原住民族傳統智慧創作保護條例：平行但不同的框架</h3>
+
+<p>對原住民宗教祭儀器物而言，適用的是另一套法律框架。2007 年制定的《原住民族傳統智慧創作保護條例》（傳智條例）明定，原住民族傳統之宗教祭儀、雕塑、編織、圖案、民俗技藝等文化成果表達，可由部落或原住民族申請「智慧創作專用權」，<cite>[24]</cite> 截至 2020 年底已有 76 件登記公告。<cite>[25]</cite></p>
+
+<p>這套框架與文資法有三個根本性的差異，對科技介入具有直接影響：第一，權利主體是「部落集體」而非個人，意味著任何記錄或使用行為需要部落層級的集體授權；第二，保護期間為「永久」；第三，結構形式與圖騰紋樣均可受保護——2016 年達悟族拼板舟被第三方申請專利一事，清楚說明了在缺乏部落集體同意的情況下，善意的記錄或研究都可能演變為知識剝奪。<cite>[26]</cite></p>
+
+<div class="callout alert">
+  <strong>政策缺口</strong>
+  現有文資法主要保護「已認定的知名保存者」，對基層匠師的支持有限；傳智條例則保護原住民集體創作，但「未申請登記者不受保護」的機制，使大量尚未登記的傳統器物知識仍暴露在被外部挪用的風險中。
+</div>
+
+<h3>4.3 遺產活化的失敗模式</h3>
+
+<p>值得特別關注的，是一種在政策執行面反覆出現的有害模式：解法本身成為新的問題。將文化遺產場所轉型為咖啡廳、餐廳等商業空間，是台灣「古蹟活化」政策的常見手法。然而研究指出，商業化若缺乏社群參與與文化脈絡保護，最終會導致遺產場所失去客觀真實性、在地居民被排除在外、遺產從「公共財」變為「私人營利工具」。<cite>[27]</cite> 公部門由上而下的活化策略，常因無法與在地資源連結而失去公共性與地方認同。<cite>[28]</cite> 過度商業化在短期帶來的觀光人潮，長期反而侵蝕人們選擇造訪的動機——因為「真實性」正是吸引訪客的核心，而商業化本身正在消耗這個核心。<cite>[29]</cite></p>
+
+
+<h2 id="s5">五、工藝真實性的本體論困境</h2>
+
+<p>在討論科技介入之前，有一個根本性的哲學問題必須先被正視：什麼叫做「真實的」宗教工藝？這個問題不只是學術討論，它直接決定了任何介入方案的邊界與意義。</p>
+
+<h3>5.1 真實性的多個層次</h3>
+
+<p>學術研究將工藝與遺產的「真實性」（authenticity）拆解為多個層次：客觀真實性（物件與原物相符）、建構真實性（社群賦予的意義認可）、存在真實性（體驗者感受到的情感真實），以及後現代真實性（在當代脈絡中重新被賦予意義的真實）。<cite>[27]</cite> 一件廟宇彩繪作品的「真實性」，不只取決於它是否由人工手繪（客觀層次），也取決於廟方與信眾是否相信這件作品承載了匠師的虔敬之心（建構層次），以及觀者在面對作品時是否感受到神聖氛圍（存在層次）。科技介入若只處理第一層，而忽略後兩層，作品在文化上依然可能是「空洞的」。<cite>[30]</cite></p>
+
+<p>對原住民祭儀器物而言，真實性問題更為深層：陶壺、琉璃珠的神聖性，根植於特定的宇宙觀與世代傳承的故事，這種「關係性真實性」不附著於物件本身，而附著於物件與社群之間的活的關係。一旦這個關係斷裂，即便物件被精確復原，神聖性也無法同步復原。</p>
+
+<h3>5.2 偶然性作為工藝價值的來源</h3>
+
+<p>在日本工藝美學中，「侘寂」（Wabi-Sabi）哲學將不完美、無常與偶然視為真實性與生命感的來源。<cite>[31]</cite> 陶瓷燒製的窯變、木材紋理的不規則、手工刺繡的細微差異——這些「不可控性」不是缺陷，而是手工藝與工業製品最根本的區別。這引出了一個深刻的矛盾：若 AI 介入使得工藝的每一個環節都變得可預測、可複製、可品質控制，它在降低學習門檻的同時，可能也削弱了「為什麼要選擇手工藝」的根本理由。如果 AI 讓燒製結果變得百分之百可控，這件作品還具有傳統工藝追求的「偶然之美」嗎？這個問題沒有標準答案，但它是任何科技介入方案都必須正視的核心張力。</p>
+
+<div class="callout note">
+  <strong>設計判斷標準</strong>
+  AI 介入宗教工藝的目標，應該是「讓匠師把時間花在高判斷、高創作的部分」，而不是「讓工藝的每個細節都標準化」。如何刻意保留偶然性的空間，是判斷一個 AI 介入方案是否真正理解工藝本質的試金石。
+</div>
+
+
+<h2 id="s6">六、利害關係人分析</h2>
+
+<p>宗教工藝傳承涉及多組利害關係人，且彼此之間存在複雜的利益張力：</p>
+
+<div class="stakeholder-grid">
+  <div class="stakeholder-card">
+    <div class="role">技術持有者</div>
+    <div class="name">漢人宗教工藝匠師 / 非遺保存者</div>
+    <p>掌握核心技術，但面臨收入不穩定、接班無人、老化等壓力。對科技介入有兩種截然不同的恐懼：擔心「被偷技術」（資料主權）以及「被取代」（職業認同），需要分別處理。</p>
+    <span class="tension">↔ 資料主權 × 職業認同的雙重恐懼</span>
+  </div>
+  <div class="stakeholder-card">
+    <div class="role">集體知識持有者</div>
+    <div class="name">原住民族部落 / 祭師</div>
+    <p>祭儀器物的知識主權歸屬部落集體，祭師是信仰與歷史傳說的詮釋者。任何外部介入需要部落層級的集體同意，而非個人授權。歷史上的挪用案例使部落對外部合作保持高度警戒。</p>
+    <span class="tension">↔ 集體主權 × 外部介入信任的根本緊張</span>
+  </div>
+  <div class="stakeholder-card">
+    <div class="role">需求端</div>
+    <div class="name">廟宇管理委員會</div>
+    <p>工程委發的決策者，同時承受成本壓力、儀式正統性要求與社群信任三個訴求，且這三者之間本身就存在張力。預算有限時傾向選擇替代品，但部分廟宇仍重視傳統工藝的文化正統性。</p>
+    <span class="tension">↔ 成本 × 正統性 × 社群信任的三角張力</span>
+  </div>
+  <div class="stakeholder-card">
+    <div class="role">潛在傳承者</div>
+    <div class="name">年輕世代 / 學徒</div>
+    <p>有潛在興趣但面臨高門檻：技術學習門檻高、師徒制的制度性排除（尤其女性）、職涯回報不確定，以及缺乏成功先例。興趣往往停留在「課程參與者」而非「技藝繼承人」的層次。</p>
+    <span class="tension">↔ 興趣 vs. 可及性與制度排除的落差</span>
+  </div>
+  <div class="stakeholder-card">
+    <div class="role">信仰社群</div>
+    <div class="name">信眾 / 地方社區</div>
+    <p>廟宇的主要支持者，但多數對工藝品質的辨識能力有限。對傳統工藝的情感認同，往往是推動保護的民間力量來源，但他們是「文化的土壤」——若地方連結繼續弱化，工藝將失去存在的根基。</p>
+    <span class="tension">↔ 情感認同 vs. 辨識能力的落差</span>
+  </div>
+  <div class="stakeholder-card">
+    <div class="role">政策端</div>
+    <div class="name">文化部 / 原住民族委員會</div>
+    <p>分別透過文資法與傳智條例提供保護框架，但兩套制度的覆蓋範圍均有限，且補助模式傾向硬體修復，忽略長期人才培育。兩個機關之間的跨部會協調亦是尚待優化的問題。</p>
+    <span class="tension">↔ 制度設計 vs. 現場彈性的落差</span>
+  </div>
+  <div class="stakeholder-card">
+    <div class="role">市場替代</div>
+    <div class="name">量產工廠 / 外來廠商</div>
+    <p>提供低成本替代品，滿足廟宇的工程需求，但壓縮了本土匠師的市場空間。其存在本身是市場失靈的結果，而非原因。</p>
+    <span class="tension">↔ 市場效率 vs. 文化價值的衝突</span>
+  </div>
+  <div class="stakeholder-card">
+    <div class="role">科技介入者</div>
+    <div class="name">科技研究者 / 文化科技新創</div>
+    <p>具備工具開發能力，但往往缺乏對工藝文化語境的深度理解。對漢人匠師需處理個人信任問題；對原住民部落需處理集體主權問題——兩者需要截然不同的設計策略。</p>
+    <span class="tension">↔ 技術能力 vs. 文化理解的落差</span>
+  </div>
+</div>
+
+<div class="callout info">
+  <strong>關鍵張力點</strong>
+  在所有利害關係人之中，最核心的張力發生在「匠師／部落」與「廟方／外部介入者」之間：廟方是匠師技藝存活的主要市場，但廟方的採購決策又受成本邏輯驅動；科技介入者握有保存工具，但握有知識的一方（匠師與部落）卻缺乏動機讓渡主導權。若這組關係無法被重新設計，其他保護努力都只是邊際效應。
+</div>
+
+
+<h2 id="s7">七、科技介入：可能性、缺口與風險</h2>
+
+<h3>7.1 現有行動盤點</h3>
+
+<p>自 2003 年 UNESCO 通過《保護非物質文化遺產公約》以來，各國運用科技保護非遺的嘗試大量湧現。研究文獻梳理顯示，西方研究傾向以技術為中心，強調 VR、AR、區塊鏈等用於遺產數位建模和虛擬展覽；而中文學術圈則採文化與科技並重的路徑，更關注數位敘事、社區參與和跨學科合作。<cite>[32]</cite> 具體案例方面，動作捕捉與 AI 技術已被用於舞蹈等身體性非遺的三維數位記錄；3D 掃描可高精度還原文物；AI 圖案生成器嘗試模擬傳統紋樣風格；VR 展館讓更多人能夠遠端接觸傳統工藝。這些方向均具有技術可行性，也有實際案例佐証其效用。</p>
+
+<h3>7.2 核心問題：從「記錄」到「傳承」的斷層</h3>
+
+<p>然而，現有行動普遍面臨一個根本限制：大多數技術介入停留在「保存與展示」的層次，無法解決「傳承」本身的問題。學術研究已指出，現有的數位工具大多以「以物件為中心」（object-centric）的思路設計，適合保存有形遺產，但對於「活的無形遺產」——依賴身體傳遞、社會習得、持續演化的技藝實踐——幾乎沒有有效的技術解方。<cite>[18]</cite></p>
+
+<table class="gap-table">
+  <tr><th>介入方向</th><th>現有狀態</th><th>實際缺口</th></tr>
+  <tr>
+    <td>數位記錄建檔</td>
+    <td><span class="tag exists">已存在</span> 3D 掃描、影像記錄</td>
+    <td>記錄的是「作品」，不是「創作過程中的判斷邏輯」</td>
+  </tr>
+  <tr>
+    <td>AI 圖案輔助</td>
+    <td><span class="tag exists">部分存在</span> 風格模擬生成</td>
+    <td>生成的是視覺形式，脫離了宗教題材的文化語境</td>
+  </tr>
+  <tr>
+    <td>VR / AR 展示</td>
+    <td><span class="tag exists">已存在</span> 虛擬導覽、展覽</td>
+    <td>服務觀眾欣賞，不服務學習者習得技藝</td>
+  </tr>
+  <tr>
+    <td>低門檻學習工具</td>
+    <td><span class="tag gap">尚未出現</span></td>
+    <td>讓新手能夠安全試錯、逐步累積技藝的工具幾乎空白</td>
+  </tr>
+  <tr>
+    <td>師徒媒合機制</td>
+    <td><span class="tag gap">尚未出現</span></td>
+    <td>有意願學習者難以找到願意傳授的匠師</td>
+  </tr>
+  <tr>
+    <td>市場重新設計</td>
+    <td><span class="tag gap">尚未出現</span></td>
+    <td>廟方採購決策幾乎未受任何介入，仍以成本為主導</td>
+  </tr>
+  <tr>
+    <td>材料供應鏈介入</td>
+    <td><span class="tag gap">政策層僅初步啟動</span></td>
+    <td>原生材料復育計畫尚在初期，科技工具在此層幾乎無效</td>
+  </tr>
+</table>
+
+<h3>7.3 知識主權的兩個層次：個人信任與集體同意</h3>
+
+<p>即便技術方案成熟，科技介入要能落地，還需要面對一個更根本的問題：誰有權決定知識被如何記錄與使用？在台灣宗教工藝的脈絡下，這個問題有兩種截然不同的結構。</p>
+
+<p><strong>漢人匠師的個人信任問題</strong>：匠師對 AI 介入的抗拒，並非單一情緒，而是兩種不同恐懼的疊加——「被偷技術」（資料主權層次）與「被取代」（職業認同層次）。許多技藝是匠師賴以維生的獨特競爭優勢，一旦被系統化、數位化，就存在被外泄、被複製、甚至被 AI 直接模仿的結構性風險。<cite>[33]</cite> 同時，對長年投入的匠師而言，技藝不只是謀生手段，更是自我定義的方式——AI 若能複製其外在形式，威脅的不只是收入，而是存在意義本身。</p>
+
+<p><strong>原住民部落的集體主權問題</strong>：性質完全不同。原住民族傳統器物的知識屬於部落整體，任何記錄、使用或數位化行為，在法律上需要部落層級的集體授權；在倫理上，更需要符合「CARE 原則」所強調的集體利益（Collective Benefit）、管理權限（Authority to Control）、責任（Responsibility）與倫理（Ethics）。<cite>[34]</cite> 達悟族拼板舟被外部公司申請專利一事清楚說明，在缺乏部落集體同意的情況下，善意的記錄或研究都可能演變為知識剝奪。<cite>[26]</cite></p>
+
+<p>AI 輔助隱性知識提取的研究指出，最有效的方式是「共同演化」（co-evolution）——AI 作為認識論夥伴，而非單向提取工具，人類的詮釋性專業與機器智能相互增強，而非後者取代前者。<cite>[35]</cite> 這種架構要求從一開始就讓知識持有者（個人匠師或部落集體）參與設計過程，而不是在工具完成後才去說服他們接受。</p>
+
+<h3>7.4 AI 介入的倫理框架</h3>
+
+<p>在 2024 年 UNESCO 首屆「非遺與 AI」國際研討會上，專家提出 AI 介入非遺的潛在風險：包括資料誤用、文化偏見、社群的知識產權問題，以及演算法透明度等。<cite>[36]</cite> 歐洲議會的報告亦指出，在文化遺產領域應用 AI，需要建立統一標準與倫理框架，包括演算法透明度、數據所有權與使用方式。<cite>[37]</cite> 對台灣宗教工藝而言，這意味著：即便 AI 工具在技術上可行，如何確保介入不扭曲原有文化意義、不侵害知識主體性（無論是個人還是集體），是必須優先討論的前提，而非事後補救的倫理說明。</p>
+
+<div class="callout alert">
+  <strong>核心提醒</strong>
+  「如何讓知識持有者願意參與」這個問題，本身就是設計的一部分，而且應該是最先被設計的部分。對漢人匠師而言，這是個人信任的建立；對原住民部落而言，這是集體授權協議的設計。兩者都應先於技術架構的開發。
+</div>
+
+
+<h2 id="s8">八、議題複雜性摘要</h2>
+
+<p>綜合以上分析，台灣宗教工藝傳承危機的複雜性可歸納為四個相互交織的問題層次：</p>
+
+<p><strong>物質層次</strong>：工藝所依賴的原生材料正在消失，上下游產業鏈在多個環節斷裂。這是科技方案幾乎無法直接觸及的物質基礎問題，也是最常被數位化介入忽略的一層。</p>
+
+<p><strong>制度層次</strong>：師徒制的性別與血緣排除、政策資源的錯置、遺產商業化帶來的公共性侵蝕，以及原住民知識主權的法律保護落差，構成傳承困境的結構性障礙。僅靠技術工具無法改變這些制度邏輯。</p>
+
+<p><strong>技術層次</strong>：工藝技藝本身包含大量隱性知識，現有數位工具尚無有效方案外顯與傳遞這類身體化、情境依存的知識。同時，任何試圖「標準化」的介入，都可能削弱工藝本身的偶然美學價值。</p>
+
+<p><strong>社會文化層次</strong>：宗教工藝的傳承不只是技術轉移，而是整套信仰、倫理、美學語境的再生產。漢人匠師的主體性恐懼、原住民部落的集體主權意識、信眾的文化辨識力下降、地方社區連結的弱化，都是深層的結構阻力。</p>
+
+<div class="callout warn">
+  <strong>對設計介入的啟示</strong>
+  任何科技介入方案，若只解決四個問題層次中的一個，都難以產生持久的改變。最有潛力的切入點，是找到能同時觸動技術可及性（降低學習門檻）、制度可及性（繞過或改革排除機制）、與市場誘因（讓廟方有動機選擇傳統工藝）的設計點——同時必須以確保知識主體性（個人層次與集體層次）為前提。
+</div>
+
+<hr class="divider">
+
+<div class="references" id="refs">
+  <h2>參考資料</h2>
+  <ol>
+    <li>內政部統計處（2025）。全國寺廟統計資料。</li>
+    <li>內政部全國宗教資訊網（2023）。〈剪黏〉，宗教知識＋ 宗教藝術。<a href="https://religion.moi.gov.tw/Knowledge/Content?ci=2&cid=115">https://religion.moi.gov.tw</a></li>
+    <li>台灣光華雜誌（2012）。〈剪黏藝術氣韻神動：台南葉家百年傳承〉。<a href="https://www.taiwan-panorama.com/Articles/Details?Guid=2e7b9ac1-c985-4851-b27d-53d5f106d21a">https://www.taiwan-panorama.com</a></li>
+    <li>內政部全國宗教資訊網（2023）。〈交趾陶〉，宗教知識＋ 宗教藝術。<a href="https://religion.moi.gov.tw/Knowledge/Content?ci=2&cid=63">https://religion.moi.gov.tw</a></li>
+    <li>老古板的古建築之旅（2018）。〈剪黏工藝欣賞（二十）——景美仙跡巖廟（淋塘剪黏）〉。</li>
+    <li>行政院全球資訊網（2021）。〈國家文化資產的保存與活化〉。<a href="https://www.ey.gov.tw/Page/5A8A0CB5B41DA11E/d70c6ee4-d64f-44a6-ba11-2136390f9ba7">https://www.ey.gov.tw</a></li>
+    <li>全佛文化（2024）。〈佛教的法器〉。<a href="https://buddhall.com/shop.php?PNo=261&type=3">https://buddhall.com</a></li>
+    <li>浩鑫罄鐘佛具（2024）。台灣手工銅器製造介紹。<a href="https://hau-shin-ching-jung.com/">https://hau-shin-ching-jung.com</a></li>
+    <li>內政部全國宗教資訊網（2023）。〈木魚〉，宗教知識＋ 宗教器物。<a href="https://religion.moi.gov.tw/Knowledge/Content?ci=2&cid=541">https://religion.moi.gov.tw</a></li>
+    <li>商業周刊（2019）。〈鬼月供品要插香、普渡不能擺屋內：供桌上的眉角一次看懂〉。<a href="https://www.businessweekly.com.tw/style/blog/26499">https://www.businessweekly.com.tw</a></li>
+    <li>台灣原住民族資訊資源網。〈認識原住民族：傳統信仰〉。<a href="https://www.tipp.org.tw/aborigines_info.asp?A_ID=1&AC_No=5">https://www.tipp.org.tw</a></li>
+    <li>JIBAO 洞悉教材（2017）。〈臺灣原住民族陶製品介紹〉（含排灣族陶壺與鄒族製陶技術失傳記錄）。<a href="https://jibaoviewer.com/project/589bc1e22d2e3b5d45444910">https://jibaoviewer.com</a></li>
+    <li>維基百科（2025）。〈哈古〉（卑南族木雕藝術家）。<a href="https://zh.wikipedia.org/zh-tw/%E5%93%88%E5%8F%A4">https://zh.wikipedia.org</a></li>
+    <li>國家發展委員會（2022）。〈中華民國人口推估報告〉。</li>
+    <li>交大喀報（2018）。〈傳統產業：跨越世代再轉型〉。<a href="https://castnet.nctu.edu.tw/castnet/article/12657">https://castnet.nctu.edu.tw</a></li>
+    <li>黃煥榮等（2011）。〈公務人力資源管理之性別議題與對策：組織建築模式之分析〉。文官制度季刊，第3卷第2期。</li>
+    <li>行政院文建會（2011）。〈100 年度推動性別主流化成果報告〉。</li>
+    <li>Hou, J. et al. (2022). "Digitizing Intangible Cultural Heritage Embodied: State of the Art." <em>ACM Journal on Computing and Cultural Heritage</em>. <a href="https://dl.acm.org/doi/10.1145/3494837">https://dl.acm.org/doi/10.1145/3494837</a></li>
+    <li>民間研究所（2024）。〈台灣手工藝有哪些？認識快失傳的傳統技術與國寶級職人〉。<a href="https://livinknowledge.org/">https://livinknowledge.org</a></li>
+    <li>行政院全球資訊網（2022）。〈臺灣工藝文化產業中長程計畫〉。<a href="https://www.ey.gov.tw/Page/5A8A0CB5B41DA11E/01171b27-9fb6-4a25-b1cc-54eed1e221b9">https://www.ey.gov.tw</a></li>
+    <li>行政院全球資訊網（2022）。〈臺灣工藝文化產業現況及發展策略〉（院會議案）。<a href="https://www.ey.gov.tw/Page/448DE008087A1971/69b81304-ebcf-4967-875e-875179e4a6e6">https://www.ey.gov.tw</a></li>
+    <li>維基百科（2025）。〈文化資產保存法〉。<a href="https://zh.wikipedia.org/zh-tw/文化資產保存法">https://zh.wikipedia.org</a></li>
+    <li>文化部文化資產局（2023）。〈文化資產保存修復及管理維護補助作業要點〉。</li>
+    <li>法律百科 Legispedia（2024）。〈什麼是原住民族傳統智慧創作？〉。<a href="https://www.legis-pedia.com/article/More/841">https://www.legis-pedia.com</a></li>
+    <li>著作權筆記（2016）。〈原住民族傳統智慧創作保護爭議的幾個釐清〉。<a href="http://www.copyrightnote.org/ArticleContent.aspx?ID=54&aid=2767">http://www.copyrightnote.org</a></li>
+    <li>聖島智慧財產（2024）。〈淺談原住民傳統文化表現之智慧財產權法律議題〉（含達悟族拼板舟專利爭議始末）。<a href="https://www.saint-island.com.tw/TW/Knowledge/Knowledge_Info.aspx?IT=Know_0_1&ID=1213&CID=522">https://www.saint-island.com.tw</a></li>
+    <li>Langzhong Ancient City 研究（2021）. "Effect of Commercialization on Tourists' Perceived Authenticity." <em>Sustainability</em> 13(12). <a href="https://doi.org/10.3390/su13126847">https://doi.org/10.3390/su13126847</a></li>
+    <li>行政院全球資訊網。〈公部門古蹟活化政策檢討〉。<a href="https://www.ey.gov.tw">https://www.ey.gov.tw</a></li>
+    <li>ScienceDirect (2025). "From tradition to transaction: The effect of commercialization on tourism experience." <a href="https://www.sciencedirect.com/science/article/abs/pii/S1447677025000397">https://www.sciencedirect.com</a></li>
+    <li>大紀元（2008）。〈廟宇工藝之剪黏與交趾陶〉。<a href="https://www.epochtimes.com/b5/8/8/14/n2228533.htm">https://www.epochtimes.com</a></li>
+    <li>"Wabi-Sabi: The Japanese Philosophy of Embracing Imperfection." Japanese Taste Blog (2024). <a href="https://japanesetaste.com/blogs/japanese-taste-blog/wabi-sabi-japanese-philosophy">https://japanesetaste.com</a></li>
+    <li>Xiao, Y. & Liu, Q. (2026). "Knowledge graph-driven digital preservation of intangible cultural heritage: a cross-cultural comparative study." <em>Humanities and Social Sciences Communications</em>. <a href="https://www.nature.com/articles/s41599-025-06186-9">https://www.nature.com</a></li>
+    <li>Goetze, T. S. (2024). "AI Art is Theft: Labour, Extraction, and Exploitation." <em>arXiv preprint</em>.<a href="https://arxiv.org/html/2401.06178v2">https://arxiv.org/html/2401.06178v2</a></li>
+    <li>Martínez et al. (2025). "From Tacit Knowledge Distillation to AI-Enabled Culture Revitalization." <em>Social Sciences</em> 15(1). <a href="https://doi.org/10.3390/socsci15010007">https://doi.org/10.3390/socsci15010007</a></li>
+    <li>Casillas et al. (2025). "Unveiling the Unspoken: A Conceptual Framework for AI-Enabled Tacit Knowledge Co-Evolution." <em>AI</em> 6(1). <a href="https://doi.org/10.3390/ai6010001">https://doi.org/10.3390/ai6010001</a></li>
+    <li>UNESCO Intangible Cultural Heritage (2024). "Exploring the impact of Artificial Intelligence and Intangible Cultural Heritage." <a href="https://ich.unesco.org/en/news/exploring-the-impact-of-artificial-intelligence-and-intangible-cultural-heritage-13536">https://ich.unesco.org</a></li>
+    <li>European Parliament Research Service (2023). "Artificial intelligence in the context of cultural heritage and museums." <a href="https://www.europarl.europa.eu/RegData/etudes/BRIE/2023/747120/EPRS_BRI(2023)747120_EN.pdf">https://www.europarl.europa.eu</a></li>
+  </ol>
+</div>
+
+</div>
+</body>
+</html>

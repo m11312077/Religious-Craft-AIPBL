@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>金門打花草 - AI陣頭傳承 Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" crossorigin="anonymous"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'culture-red': '#B22222',
+                        'culture-gold': '#DAA520',
+                        'dark-bg': '#1a1a2e',
+                        'ghost-cyan': '#00ffff'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0f0f1a; color: white; margin: 0; }
+        ::-webkit-scrollbar { display: none; }
+        
+        .mobile-container {
+            max-width: 414px;
+            width: 100%;
+            height: 100vh;
+            max-height: 896px;
+            margin: 0 auto;
+            background-color: #1a1a2e;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .view-section {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            background-color: #1a1a2e;
+        }
+
+        .view-section:not(.hidden) { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .video-container { position: relative; width: 100%; height: 60vh; background-color: #000; border-radius: 1rem; overflow: hidden;}
+        .input_video { position: absolute; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); z-index: 1;}
+        .output_canvas { position: absolute; width: 100%; height: 100%; object-fit: cover; z-index: 10; transform: scaleX(-1); }
+        
+        .modal-overlay { background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
+        
+        /* Combo 動畫 */
+        .combo-anim { transition: transform 0.1s ease-out; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+<div class="mobile-container">
+    
+    <!-- 畫面 1: 首頁 -->
+    <div id="view-home" class="view-section p-5">
+        <div class="flex justify-between items-center mb-6 mt-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-culture-gold flex items-center justify-center text-dark-bg font-bold text-xl">花</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">金門打花草</h1>
+                    <p class="text-xs text-gray-400">傳承計畫 Prototype</p>
+                </div>
+            </div>
+            <div class="bg-gray-800 px-3 py-1 rounded-full border border-culture-gold/30 flex items-center gap-2">
+                <i class="fa-solid fa-coins text-culture-gold text-sm"></i>
+                <span id="total-points" class="font-bold text-sm">120</span>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-culture-red to-red-900 rounded-xl p-4 mb-6 shadow-lg">
+            <h2 class="text-sm font-bold text-white/80 mb-2 flex justify-between">
+                <span><i class="fa-solid fa-fire mr-1"></i> 每日任務</span>
+                <span id="daily-task-text">1 / 3</span>
+            </h2>
+            <div class="w-full bg-black/40 rounded-full h-2.5 mb-2">
+                <div id="daily-task-bar" class="bg-culture-gold h-2.5 rounded-full transition-all duration-1000" style="width: 33%"></div>
+            </div>
+            <p class="text-xs text-white/90" id="daily-task-desc">今日再完成 2 個舞步練習即可獲得獎勵！</p>
+        </div>
+
+        <h2 class="text-lg font-bold mb-4 border-l-4 border-culture-gold pl-2">章節：基礎步伐</h2>
+        
+        <div class="space-y-4 pb-10">
+            <div id="level-1-card" onclick="switchView('view-tutorial')" class="bg-gray-800 rounded-xl p-4 flex gap-4 cursor-pointer hover:bg-gray-700 transition active:scale-95 border border-gray-700 relative overflow-hidden">
+                <div class="w-20 h-20 rounded-lg bg-gray-900 overflow-hidden flex-shrink-0 relative">
+                    <img src="https://images.unsplash.com/photo-1542840410-3092f99611a3?w=200&q=80" alt="花草角色" class="w-full h-full object-cover opacity-80 mix-blend-luminosity">
+                    <div class="absolute inset-0 bg-culture-red/20 mix-blend-multiply"></div>
+                </div>
+                <div class="flex-1 flex flex-col justify-center">
+                    <div class="text-xs text-culture-gold mb-1 font-bold flex justify-between">
+                        <span>關卡 1-1</span>
+                        <span id="level-1-badge" class="hidden text-green-400"><i class="fa-solid fa-circle-check"></i> 已完成</span>
+                    </div>
+                    <h3 class="font-bold text-lg mb-1">連續展臂揮動</h3>
+                    <p class="text-xs text-gray-400">學習核心的手部流暢切換與氣勢展現。</p>
+                </div>
+            </div>
+            
+            <div id="level-2-card" class="bg-gray-800/50 rounded-xl p-4 flex gap-4 opacity-60 transition-all duration-500">
+                <div id="level-2-icon" class="w-20 h-20 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+                    <i class="fa-solid fa-lock text-gray-600 text-2xl z-10" id="level-2-lock"></i>
+                    <img id="level-2-img" src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=200&q=80" class="w-full h-full object-cover opacity-80 mix-blend-luminosity absolute inset-0 hidden">
+                </div>
+                <div class="flex-1 flex flex-col justify-center">
+                    <div class="text-xs text-gray-500 mb-1 font-bold" id="level-2-tag">關卡 1-2</div>
+                    <h3 class="font-bold text-lg mb-1 text-gray-400" id="level-2-title">進階跳躍</h3>
+                    <p class="text-xs text-gray-500" id="level-2-desc">需完成 1-1 後解鎖</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 畫面 2: 教學 -->
+    <div id="view-tutorial" class="view-section hidden flex flex-col">
+        <div class="relative w-full h-64 bg-black flex-shrink-0">
+            <img src="https://images.unsplash.com/photo-1542840410-3092f99611a3?w=600&q=80" class="w-full h-full object-cover opacity-60">
+            <button onclick="switchView('view-home')" class="absolute top-4 left-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center backdrop-blur text-white z-10">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+        </div>
+        
+        <div class="p-5 flex-1 relative overflow-y-auto pb-24">
+            <div class="flex justify-between items-end mb-2">
+                <h2 class="text-2xl font-bold">連續展臂揮動</h2>
+                <span class="text-culture-gold text-sm font-bold"><i class="fa-solid fa-star"></i> +50 pts</span>
+            </div>
+            <p class="text-sm text-gray-400 mb-6 border-b border-gray-800 pb-4">陣頭講求連貫與氣勢。系統將先為你校正定點姿勢，隨後進入連續揮動考驗。<b>揮動越快越順，氣勢值越高；停滯不前則會扣分！</b></p>
+            
+            <h3 class="font-bold text-md mb-3 flex items-center gap-2"><i class="fa-solid fa-robot text-culture-gold"></i> AI 評分機制</h3>
+            <ul class="space-y-3">
+                <li class="bg-gray-800 rounded-lg p-3 flex gap-3 items-center">
+                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-ghost-cyan"><i class="fa-solid fa-ghost"></i></div>
+                    <div>
+                        <div class="font-bold text-sm">動態殘影校正</div>
+                        <div class="text-xs text-gray-400">跟隨青色虛線殘影，將雙臂（包含手肘）觸碰目標區域。</div>
+                    </div>
+                </li>
+                <li class="bg-gray-800 rounded-lg p-3 flex gap-3 items-center">
+                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-culture-red"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                    <div>
+                        <div class="font-bold text-sm">連擊與氣勢衰退</div>
+                        <div class="text-xs text-gray-400">連續擊中目標可獲得 Combo 加分。若揮動過慢，氣勢值將會快速流失！</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="absolute bottom-0 w-full p-5 bg-gradient-to-t from-dark-bg via-dark-bg to-transparent z-20">
+            <button onclick="startPractice()" class="w-full bg-culture-red hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-camera"></i> 開啟相機，開始挑戰
+            </button>
+        </div>
+    </div>
+
+    <!-- 畫面 3: AI 練習 -->
+    <div id="view-practice" class="view-section hidden bg-black">
+        <div class="absolute top-4 left-4 z-20 flex flex-col gap-2 w-full pr-8">
+            <div class="flex justify-between items-center">
+                <button onclick="stopPractice()" class="w-10 h-10 bg-black/50 rounded-full flex items-center justify-center backdrop-blur text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="bg-black/50 backdrop-blur px-4 py-1 rounded-full text-sm font-bold flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div> <span id="practice-status">準備中</span>
+                </div>
+                <div id="timer" class="font-bold font-mono text-lg">00:15</div>
+            </div>
+            
+            <div class="w-full bg-gray-800 rounded-full h-3 mt-2 border border-gray-700 relative overflow-hidden shadow-lg">
+                <div id="score-bar" class="bg-gradient-to-r from-red-600 to-culture-gold h-3 rounded-full transition-all duration-[50ms]" style="width: 0%"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold z-10 drop-shadow-md">
+                    氣勢值 <span id="score-text" class="ml-1">0%</span>
+                </div>
+                <div class="absolute top-0 bottom-0 left-[60%] w-0.5 bg-white/50 z-20"></div>
+            </div>
+        </div>
+
+        <div class="video-container mt-24 mx-4 shadow-xl shadow-gray-900/50 relative">
+            <div id="loading-ai" class="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center z-20">
+                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-culture-gold mb-4"></i>
+                <p class="text-sm font-bold">啟動 AI 系統中...</p>
+                <p class="text-xs text-gray-400 mt-2" id="loading-text">請求相機權限中</p>
+            </div>
+            
+            <!-- Combo 顯示 -->
+            <div id="combo-display" class="combo-anim absolute top-4 right-4 z-30 text-3xl font-black italic text-culture-gold drop-shadow-[0_0_8px_rgba(218,165,32,0.8)] hidden">
+                Combo x1
+            </div>
+            
+            <video class="input_video" id="input_video" autoplay playsinline muted></video>
+            <canvas class="output_canvas" id="output_canvas"></canvas>
+            
+            <div id="ai-feedback-box" class="ai-feedback absolute bottom-4 left-4 right-4 bg-gray-900/90 backdrop-blur border-2 border-gray-600 text-white p-3 rounded-xl z-30 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300">
+                <div id="feedback-icon" class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-ellipsis"></i>
+                </div>
+                <div>
+                    <div class="text-[10px] text-culture-gold font-bold mb-0.5 tracking-wider">AI 動態教練</div>
+                    <div id="feedback-text" class="font-bold text-sm">請將全身出現在鏡頭中...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 w-full p-6 pb-8 bg-gradient-to-t from-black to-transparent flex justify-center gap-6 z-20">
+            <button onclick="toggleStepMode()" class="bg-gray-800 text-white w-14 h-14 rounded-full flex flex-col items-center justify-center active:scale-95 border border-gray-600">
+                <i class="fa-solid fa-layer-group mb-1 text-sm text-culture-gold"></i><span class="text-[10px]">分步</span>
+            </button>
+            <button onclick="forceFinishPractice()" class="bg-culture-gold text-dark-bg w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-lg shadow-culture-gold/20 active:scale-95 font-bold text-xl relative group">
+                <i class="fa-solid fa-flag-checkered"></i>
+            </button>
+            <button onclick="restartPractice()" class="bg-gray-800 text-white w-14 h-14 rounded-full flex flex-col items-center justify-center active:scale-95">
+                <i class="fa-solid fa-rotate-right mb-1 text-sm"></i><span class="text-[10px]">重練</span>
+            </button>
+        </div>
+
+        <!-- 暫停 / 分步 Modal -->
+        <div id="step-modal" class="absolute inset-0 modal-overlay z-50 hidden flex-col items-center justify-center p-6">
+            <div class="bg-gray-900 border border-gray-700 rounded-2xl p-5 w-full shadow-2xl relative">
+                <button onclick="toggleStepMode()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+                <div class="text-culture-gold font-bold text-xs mb-2"><i class="fa-solid fa-pause"></i> 練習已暫停</div>
+                <h3 class="text-xl font-bold mb-4">動作拆解：展臂八字步</h3>
+                
+                <div class="flex gap-3 mb-6 overflow-x-auto pb-2 snap-x">
+                    <div class="min-w-[120px] snap-center bg-gray-800 rounded-xl p-3 border border-culture-gold/50">
+                        <div class="text-xs text-gray-400 mb-1">步驟 1 (低)</div>
+                        <div class="w-full h-20 bg-black rounded mb-2 flex items-center justify-center text-2xl text-gray-600"><i class="fa-solid fa-arrow-down"></i></div>
+                    </div>
+                    <div class="min-w-[120px] snap-center bg-gray-800 rounded-xl p-3">
+                        <div class="text-xs text-gray-400 mb-1">步驟 2 (高)</div>
+                        <div class="w-full h-20 bg-black rounded mb-2 flex items-center justify-center text-2xl text-culture-red"><i class="fa-solid fa-arrow-up"></i></div>
+                    </div>
+                </div>
+
+                <button onclick="toggleStepMode()" class="w-full bg-culture-gold text-dark-bg font-bold py-3 rounded-xl">
+                    繼續練習
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 畫面 4: 結算 -->
+    <div id="view-result" class="view-section hidden flex flex-col">
+        <div class="p-5 flex-1 overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 mt-2">
+                <button onclick="switchView('view-home')" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="font-bold">練習結算</div>
+                <div class="w-10"></div>
+            </div>
+
+            <div class="text-center mb-6" id="result-header">
+                <h2 id="result-title" class="text-4xl font-black text-culture-gold mb-1">完美！🎉</h2>
+                <p id="result-desc" class="text-gray-400 text-sm">你已掌握了陣頭的氣勢！</p>
+                <div id="result-points-box" class="inline-block mt-3 bg-gray-800 border border-culture-gold/50 px-5 py-1.5 rounded-full font-bold text-sm">
+                    獲得文化點數 <span class="text-culture-gold">+50</span> pts
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-2xl p-3 border border-gray-700 shadow-xl mx-2 relative overflow-hidden mb-6">
+                <div class="absolute inset-0 bg-gradient-to-tr from-culture-red/20 to-transparent z-10 pointer-events-none"></div>
+                <div class="flex items-center justify-between mb-2 px-2">
+                    <span class="text-xs text-gray-400 font-bold" id="video-tag"><i class="fa-solid fa-wand-magic-sparkles text-culture-gold"></i> AI 精彩特效</span>
+                    <span class="text-xs font-bold text-culture-gold" id="final-score-display">氣勢值：85%</span>
+                </div>
+                <div class="w-full h-56 bg-black rounded-xl overflow-hidden relative flex items-center justify-center">
+                    <img src="https://images.unsplash.com/photo-1542840410-3092f99611a3?w=400&q=80" class="w-full h-full object-cover opacity-80 mix-blend-screen grayscale contrast-125">
+                    <div class="absolute inset-0 bg-culture-red mix-blend-overlay opacity-50" id="video-tint"></div>
+                    <div class="absolute text-white font-black text-3xl opacity-90 rotate-12 drop-shadow-lg" id="video-watermark">金門打花草</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-5 space-y-3 bg-dark-bg z-10 shadow-[0_-10px_20px_rgba(0,0,0,0.3)]">
+            <button id="btn-share" onclick="shareResult()" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+                <i class="fa-brands fa-instagram text-xl"></i> 分享至 IG Reels
+            </button>
+            <button id="btn-home" onclick="goHomeFromResult()" class="w-full bg-transparent text-white font-bold py-3.5 rounded-xl transition active:scale-95 flex items-center justify-center gap-2 border border-gray-600">
+                領取獎勵並回首頁
+            </button>
+            <button id="btn-retry" onclick="startPractice()" class="hidden w-full bg-culture-red text-white font-bold py-3.5 rounded-xl transition active:scale-95 flex items-center justify-center gap-2 shadow-lg">
+                <i class="fa-solid fa-rotate-right"></i> 再挑戰一次
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- 核心變數統整 ---
+    let points = 120;
+    let isLevel1Completed = false;
+    const PASS_THRESHOLD = 60; // 統一及格分數常數
+    
+    // --- 遊戲狀態 ---
+    const PHASES = { STEP_1: 1, STEP_2: 2, CONTINUOUS: 3 };
+    let currentPhase = PHASES.STEP_1;
+    let currentScore = 0;
+    let comboCount = 0;
+    let framesSinceLastHit = 0;
+    let holdFrames = 0;
+    let isTargetPose1 = true;
+    let frameCount = 0;
+    
+    let isPaused = false;
+    let isPracticeRunning = false;
+    let isProcessingFrame = false; // 新增：處理鎖定，防止 WASM 記憶體重疊崩潰
+    let countdownInterval;
+    let mockInterval;
+    let timeLeft = 15;
+
+    function switchView(viewId) {
+        document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+        document.getElementById(viewId).classList.remove('hidden');
+        if (viewId === 'view-home') updateHomeUI();
+    }
+
+    function updateHomeUI() {
+        if (isLevel1Completed) {
+            document.getElementById('daily-task-text').innerText = '2 / 3';
+            document.getElementById('daily-task-bar').style.width = '66%';
+            document.getElementById('daily-task-desc').innerText = '今日再完成 1 個舞步練習即可獲得獎勵！';
+            
+            document.getElementById('level-1-card').classList.add('border-green-500', 'bg-gray-800/80');
+            document.getElementById('level-1-badge').classList.remove('hidden');
+
+            const lv2 = document.getElementById('level-2-card');
+            lv2.classList.remove('opacity-60');
+            lv2.classList.add('cursor-pointer', 'hover:bg-gray-700', 'border', 'border-culture-gold', 'active:scale-95');
+            lv2.setAttribute('onclick', 'alert("Prototype 模擬：進入第二關！")');
+            document.getElementById('level-2-lock').classList.add('hidden');
+            document.getElementById('level-2-img').classList.remove('hidden');
+            document.getElementById('level-2-title').classList.remove('text-gray-400');
+            document.getElementById('level-2-tag').classList.replace('text-gray-500', 'text-culture-gold');
+            document.getElementById('level-2-desc').innerText = '開始學習進階陣頭步伐。';
+        }
+    }
+
+    function addPoints(pts) {
+        points += pts;
+        const pEl = document.getElementById('total-points');
+        pEl.innerText = points;
+        pEl.classList.add('text-green-400', 'scale-110', 'transition', 'duration-300');
+        setTimeout(() => pEl.classList.remove('text-green-400', 'scale-110'), 600);
+    }
+
+    // --- AI 邏輯 ---
+    const videoElement = document.getElementById('input_video');
+    const canvasElement = document.getElementById('output_canvas');
+    const canvasCtx = canvasElement.getContext('2d');
+    let camera = null;
+    let pose = null;
+
+    function drawGhostSkeleton(ls, rs, targetLW, targetRW, isPose1) {
+        const w = canvasElement.width; const h = canvasElement.height;
+        
+        const elbowL = {
+            x: isPose1 ? ls.x + 0.1 : ls.x + 0.15,
+            y: isPose1 ? ls.y + 0.15 : ls.y - 0.1
+        };
+        const elbowR = {
+            x: isPose1 ? rs.x - 0.1 : rs.x - 0.15,
+            y: isPose1 ? rs.y + 0.15 : rs.y - 0.1
+        };
+
+        canvasCtx.strokeStyle = 'rgba(0, 255, 255, 0.6)'; // Ghost Cyan
+        canvasCtx.lineWidth = 4;
+        canvasCtx.setLineDash([10, 10]);
+
+        canvasCtx.beginPath(); canvasCtx.moveTo(ls.x*w, ls.y*h); canvasCtx.lineTo(rs.x*w, rs.y*h); canvasCtx.stroke();
+        
+        canvasCtx.beginPath(); canvasCtx.moveTo(ls.x*w, ls.y*h); canvasCtx.lineTo(elbowL.x*w, elbowL.y*h); canvasCtx.stroke();
+        canvasCtx.beginPath(); canvasCtx.moveTo(elbowL.x*w, elbowL.y*h); canvasCtx.lineTo(targetLW.x*w, targetLW.y*h); canvasCtx.stroke();
+        
+        canvasCtx.beginPath(); canvasCtx.moveTo(rs.x*w, rs.y*h); canvasCtx.lineTo(elbowR.x*w, elbowR.y*h); canvasCtx.stroke();
+        canvasCtx.beginPath(); canvasCtx.moveTo(elbowR.x*w, elbowR.y*h); canvasCtx.lineTo(targetRW.x*w, targetRW.y*h); canvasCtx.stroke();
+        
+        canvasCtx.setLineDash([]);
+        
+        const points = [elbowL, elbowR, targetLW, targetRW];
+        points.forEach(p => {
+            canvasCtx.beginPath(); canvasCtx.arc(p.x*w, p.y*h, 8, 0, 2*Math.PI);
+            canvasCtx.fillStyle = 'rgba(0, 255, 255, 0.4)'; canvasCtx.fill();
+            canvasCtx.strokeStyle = 'rgba(0, 255, 255, 0.8)'; canvasCtx.lineWidth = 2; canvasCtx.stroke();
+        });
+    }
+
+    function evaluateAndDrawGhost(landmarks) {
+        if (isPaused) return;
+
+        const ls = landmarks[11]; const rs = landmarks[12];
+        const le = landmarks[13]; const re = landmarks[14];
+        const lw = landmarks[15]; const rw = landmarks[16];
+
+        if(ls.visibility < 0.5 || rs.visibility < 0.5) return;
+
+        const shoulderDist = Math.abs(ls.x - rs.x);
+        let targetLW = {x:0, y:0}, targetRW = {x:0, y:0};
+
+        if (isTargetPose1) {
+            targetLW = { x: ls.x + 0.1, y: ls.y + 0.3 };
+            targetRW = { x: rs.x - 0.1, y: rs.y + 0.3 };
+        } else {
+            targetLW = { x: ls.x + 0.15, y: ls.y - 0.25 };
+            targetRW = { x: rs.x - 0.15, y: rs.y - 0.25 };
+        }
+
+        drawGhostSkeleton(ls, rs, targetLW, targetRW, isTargetPose1);
+
+        const toleranceMultiplier = (currentPhase === PHASES.CONTINUOUS) ? 1.5 : 0.8;
+        const tolerance = shoulderDist * toleranceMultiplier;
+        
+        const distL = Math.sqrt(Math.pow(lw.x - targetLW.x, 2) + Math.pow(lw.y - targetLW.y, 2));
+        const distR = Math.sqrt(Math.pow(rw.x - targetRW.x, 2) + Math.pow(rw.y - targetRW.y, 2));
+        
+        // 防作弊 (手肘判定)
+        let elbowValid = true;
+        if (isTargetPose1) {
+            elbowValid = (le.y > ls.y - 0.05) && (re.y > rs.y - 0.05);
+        } else {
+            elbowValid = (le.y < ls.y + 0.1) && (re.y < rs.y + 0.1);
+        }
+
+        const isMatched = (distL < tolerance) && (distR < tolerance) && elbowValid;
+
+        // 階段一與二：靜態校正
+        if (currentPhase === PHASES.STEP_1 || currentPhase === PHASES.STEP_2) {
+            document.getElementById('practice-status').innerText = (currentPhase === PHASES.STEP_1) ? "校正姿勢(低)" : "校正姿勢(高)";
+            
+            if (isMatched) {
+                holdFrames++;
+                updateFeedback('good', `✅ 保持姿勢... (${holdFrames}/10)`);
+                if (holdFrames >= 10) {
+                    holdFrames = 0;
+                    if (currentPhase === PHASES.STEP_1) {
+                        currentPhase = PHASES.STEP_2;
+                        isTargetPose1 = false;
+                        updateFeedback('good', '🎯 很好！現在切換到高舉姿勢');
+                    } else {
+                        currentPhase = PHASES.CONTINUOUS;
+                        isTargetPose1 = true;
+                        currentScore = 15; // 基礎分
+                        comboCount = 0;
+                        framesSinceLastHit = 0;
+                        updateFeedback('good', '🔥 校正完成！開始連續揮動！');
+                        document.getElementById('practice-status').innerText = "連續判定中";
+                    }
+                }
+            } else {
+                holdFrames = 0;
+                updateFeedback('bad', '請將手腕與手肘完全對齊青色虛線！');
+            }
+        } 
+        // 階段三：連續動態評分 (扣分與速度機制)
+        else if (currentPhase === PHASES.CONTINUOUS) {
+            framesSinceLastHit++;
+            
+            // 💡 核心機制：超過約 0.6 秒沒有擊中目標，開始扣分與斷連擊
+            if (framesSinceLastHit > 15) { 
+                currentScore -= 0.2; // 隨時間扣分
+                comboCount = 0;
+                document.getElementById('combo-display').classList.add('hidden');
+                if (framesSinceLastHit % 10 === 0 && currentScore > 0) {
+                    updateFeedback('bad', '⚠️ 揮動太慢！氣勢正在衰退！');
+                }
+            }
+            if (currentScore < 0) currentScore = 0;
+
+            if (isMatched) {
+                framesSinceLastHit = 0;
+                comboCount++;
+                
+                // 連擊加成
+                let bonus = Math.min(comboCount * 0.8, 8);
+                currentScore += (8 + bonus);
+                if (currentScore > 100) currentScore = 100;
+                
+                // 瞬間切換下一個目標
+                isTargetPose1 = !isTargetPose1;
+
+                // 顯示 Combo UI
+                const comboEl = document.getElementById('combo-display');
+                comboEl.innerText = `Combo x${comboCount}`;
+                comboEl.classList.remove('hidden');
+                comboEl.classList.remove('scale-110');
+                void comboEl.offsetWidth; // Trigger reflow for animation
+                comboEl.classList.add('scale-110');
+
+                updateFeedback('good', `🔥 完美流暢！Combo x${comboCount}`);
+            }
+
+            // 更新分數條
+            document.getElementById('score-bar').style.width = `${Math.floor(currentScore)}%`;
+            document.getElementById('score-text').innerText = `${Math.floor(currentScore)}%`;
+        }
+    }
+
+    function updateFeedback(status, message) {
+        const box = document.getElementById('ai-feedback-box');
+        const icon = document.getElementById('feedback-icon');
+        const text = document.getElementById('feedback-text');
+
+        box.classList.remove('translate-y-20', 'opacity-0');
+        text.innerText = message;
+
+        if (status === 'good') {
+            box.classList.replace('border-gray-600', 'border-green-500');
+            box.classList.replace('border-red-500', 'border-green-500');
+            icon.className = 'w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-xl text-green-400';
+            icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+        } else if (status === 'bad') {
+            box.classList.replace('border-gray-600', 'border-red-500');
+            box.classList.replace('border-green-500', 'border-red-500');
+            icon.className = 'w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center text-xl text-red-400';
+            icon.innerHTML = '<i class="fa-solid fa-exclamation"></i>';
+        }
+    }
+
+    function toggleStepMode() {
+        isPaused = !isPaused;
+        const modal = document.getElementById('step-modal');
+        const status = document.getElementById('practice-status');
+        
+        if (isPaused) {
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            status.innerText = "暫停中";
+        } else {
+            modal.classList.add('hidden'); modal.classList.remove('flex');
+            status.innerText = (currentPhase === PHASES.CONTINUOUS) ? "連續判定中" : "校正姿勢";
+        }
+    }
+
+    async function startPractice() {
+        switchView('view-practice');
+        isPracticeRunning = true;
+        isPaused = false;
+        isProcessingFrame = false; // 重置狀態
+        currentPhase = PHASES.STEP_1;
+        isTargetPose1 = true;
+        currentScore = 0;
+        comboCount = 0;
+        framesSinceLastHit = 0;
+        holdFrames = 0;
+        frameCount = 0;
+        
+        document.getElementById('score-bar').style.width = '0%';
+        document.getElementById('score-text').innerText = '0%';
+        document.getElementById('combo-display').classList.add('hidden');
+        document.getElementById('loading-ai').style.display = 'flex';
+        
+        canvasElement.width = videoElement.clientWidth || 300;
+        canvasElement.height = videoElement.clientHeight || 500;
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            videoElement.srcObject = stream;
+            
+            if(!pose) {
+                // 鎖定穩定版本路徑
+                pose = new Pose({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${file}`});
+                pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5 });
+                pose.onResults(onResults);
+                await pose.initialize(); // 新增：確保 WASM 模型完全載入後，再啟動相機迴圈
+            }
+
+            if(!camera) { // 新增：避免重複建立 Camera 物件導致迴圈疊加
+                camera = new Camera(videoElement, {
+                    onFrame: async () => { 
+                        // 新增安全鎖機制：同一時間只允許一個 Frame 進入處理
+                        if (isPracticeRunning && !isPaused && !isProcessingFrame) { 
+                            isProcessingFrame = true;
+                            try {
+                                await pose.send({image: videoElement}); 
+                            } catch(e) {
+                                console.error("AI 處理錯誤:", e);
+                            } finally {
+                                isProcessingFrame = false;
+                            }
+                        }
+                    },
+                    width: 640, height: 480
+                });
+            }
+            
+            await camera.start();
+            document.getElementById('loading-ai').style.display = 'none';
+            startTimer();
+
+        } catch (err) {
+            console.warn("無法啟動相機:", err);
+            document.getElementById('loading-text').innerText = '啟動展示模擬模式...';
+            setTimeout(() => { startMockMode(); }, 500);
+        }
+    }
+
+    function onResults(results) {
+        if(!isPracticeRunning || isPaused) return;
+        canvasCtx.save();
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        
+        if (results.poseLandmarks) {
+            evaluateAndDrawGhost(results.poseLandmarks);
+            // Draw User Skeleton
+            drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#ffffff', lineWidth: 2});
+            drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#DAA520', lineWidth: 1, radius: 3});
+        }
+        canvasCtx.restore();
+    }
+
+    function startMockMode() {
+        document.getElementById('loading-ai').style.display = 'none';
+        videoElement.style.display = 'none'; 
+        startTimer();
+
+        mockInterval = setInterval(() => {
+            if(!isPracticeRunning) return clearInterval(mockInterval);
+            if(isPaused) return; 
+            
+            frameCount++;
+            canvasCtx.clearRect(0,0, canvasElement.width, canvasElement.height);
+            canvasCtx.fillStyle = '#1e1e2d'; 
+            canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+
+            // 模擬玩家流暢的上下揮動 (波浪形軌跡)
+            let userHandY;
+            if (currentPhase === PHASES.STEP_1) userHandY = 0.7; // 手放下對齊
+            else if (currentPhase === PHASES.STEP_2) userHandY = 0.15; // 手舉高對齊
+            else userHandY = 0.45 + Math.sin(frameCount * 0.25) * 0.45; // 連續模式快速上下揮
+            
+            let elbowY = (0.4 + userHandY) / 2; // 手肘連動，通過防作弊
+
+            const mockLandmarks = new Array(33).fill({x:0, y:0, visibility:0});
+            mockLandmarks[11] = {x: 0.7, y: 0.4, visibility: 1}; 
+            mockLandmarks[12] = {x: 0.3, y: 0.4, visibility: 1}; 
+            mockLandmarks[13] = {x: 0.8, y: elbowY, visibility: 1}; 
+            mockLandmarks[14] = {x: 0.2, y: elbowY, visibility: 1}; 
+            mockLandmarks[15] = {x: 0.9, y: userHandY, visibility: 1}; 
+            mockLandmarks[16] = {x: 0.1, y: userHandY, visibility: 1}; 
+            
+            canvasCtx.save();
+            canvasCtx.translate(canvasElement.width, 0); canvasCtx.scale(-1, 1);
+            
+            evaluateAndDrawGhost(mockLandmarks); // 先畫殘影與判定
+            
+            // 後畫模擬骨架
+            const w = canvasElement.width; const h = canvasElement.height;
+            canvasCtx.strokeStyle = '#ffffff'; canvasCtx.lineWidth = 4;
+            canvasCtx.beginPath(); canvasCtx.moveTo(mockLandmarks[11].x * w, mockLandmarks[11].y * h); canvasCtx.lineTo(mockLandmarks[12].x * w, mockLandmarks[12].y * h); canvasCtx.stroke();
+            canvasCtx.beginPath(); canvasCtx.moveTo(mockLandmarks[11].x * w, mockLandmarks[11].y * h); canvasCtx.lineTo(mockLandmarks[13].x * w, mockLandmarks[13].y * h); canvasCtx.stroke();
+            canvasCtx.beginPath(); canvasCtx.moveTo(mockLandmarks[13].x * w, mockLandmarks[13].y * h); canvasCtx.lineTo(mockLandmarks[15].x * w, mockLandmarks[15].y * h); canvasCtx.stroke();
+            canvasCtx.beginPath(); canvasCtx.moveTo(mockLandmarks[12].x * w, mockLandmarks[12].y * h); canvasCtx.lineTo(mockLandmarks[14].x * w, mockLandmarks[14].y * h); canvasCtx.stroke();
+            canvasCtx.beginPath(); canvasCtx.moveTo(mockLandmarks[14].x * w, mockLandmarks[14].y * h); canvasCtx.lineTo(mockLandmarks[16].x * w, mockLandmarks[16].y * h); canvasCtx.stroke();
+            
+            [11, 12, 13, 14, 15, 16].forEach(p => {
+                canvasCtx.beginPath(); canvasCtx.arc(mockLandmarks[p].x * w, mockLandmarks[p].y * h, 6, 0, 2*Math.PI);
+                canvasCtx.fillStyle = '#DAA520'; canvasCtx.fill();
+            });
+            canvasCtx.restore();
+
+        }, 50);
+    }
+
+    function startTimer() {
+        timeLeft = 15;
+        const timerEl = document.getElementById('timer');
+        timerEl.innerText = `00:${timeLeft}`;
+        
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
+            if (isPaused) return;
+            timeLeft--;
+            timerEl.innerText = `00:${timeLeft < 10 ? '0'+timeLeft : timeLeft}`;
+            if (timeLeft <= 0) processResult();
+        }, 1000);
+    }
+
+    function restartPractice() {
+        stopPractice(false);
+        startPractice();
+    }
+
+    function stopPractice(goHome = true) {
+        isPracticeRunning = false;
+        clearInterval(countdownInterval);
+        clearInterval(mockInterval);
+        if (camera) {
+            camera.stop();
+            // 不將 camera 設為 null，以重複利用確保記憶體安全
+        }
+        if(videoElement.srcObject) videoElement.srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('ai-feedback-box').classList.add('translate-y-20', 'opacity-0');
+        if(goHome) switchView('view-home');
+    }
+
+    function forceFinishPractice() { processResult(); }
+
+    function processResult() {
+        stopPractice(false);
+        const finalScore = Math.floor(currentScore);
+        const isSuccess = finalScore >= PASS_THRESHOLD; // 使用 PASS_THRESHOLD 常數
+        
+        document.getElementById('final-score-display').innerText = `最終氣勢值：${finalScore}%`;
+        
+        if (isSuccess) {
+            isLevel1Completed = true;
+            document.getElementById('result-title').innerText = '完美！🎉';
+            document.getElementById('result-title').className = 'text-4xl font-black text-culture-gold mb-1';
+            document.getElementById('result-desc').innerText = '你已掌握了陣頭的節奏與氣勢！';
+            document.getElementById('result-points-box').style.display = 'inline-block';
+            
+            document.getElementById('video-tint').className = 'absolute inset-0 bg-culture-red mix-blend-overlay opacity-50';
+            document.getElementById('video-watermark').innerText = '金門打花草';
+            document.getElementById('video-tag').innerHTML = '<i class="fa-solid fa-wand-magic-sparkles text-culture-gold"></i> AI 精彩特效';
+            
+            document.getElementById('btn-share').style.display = 'flex';
+            document.getElementById('btn-home').style.display = 'flex';
+            document.getElementById('btn-home').innerText = '領取獎勵並回首頁';
+            document.getElementById('btn-retry').style.display = 'none';
+        } else {
+            document.getElementById('result-title').innerText = '差一點！💪';
+            document.getElementById('result-title').className = 'text-4xl font-black text-gray-300 mb-1';
+            document.getElementById('result-desc').innerText = `氣勢值 ${finalScore}%，揮動速度與連續性要再加強喔！`;
+            document.getElementById('result-points-box').style.display = 'none'; 
+            
+            document.getElementById('video-tint').className = 'absolute inset-0 bg-gray-600 mix-blend-overlay opacity-80';
+            document.getElementById('video-watermark').innerText = '再試一次';
+            document.getElementById('video-tag').innerHTML = '<i class="fa-solid fa-video text-gray-400"></i> AI 動作回放';
+            
+            document.getElementById('btn-share').style.display = 'none';
+            document.getElementById('btn-home').style.display = 'flex';
+            document.getElementById('btn-home').innerText = '先休息一下';
+            document.getElementById('btn-retry').style.display = 'flex';
+        }
+        switchView('view-result');
+    }
+
+    function goHomeFromResult() {
+        // 💡 修復處：確保這裡使用的是正確的常數名稱 PASS_THRESHOLD
+        if (currentScore >= PASS_THRESHOLD) {
+            addPoints(50);
+        }
+        switchView('view-home');
+    }
+
+    async function shareResult() {
+        if (navigator.share) {
+            try { await navigator.share({
+                title: '金門打花草 - 我的陣頭練習',
+                text: `我剛在打花草獲得了 ${Math.floor(currentScore)}% 的氣勢值！快來跟我一起挑戰！`,
+                url: window.location.href
+            }); } catch (err) {}
+        } else {
+            alert(`系統模擬：已複製連結 (氣勢值 ${Math.floor(currentScore)}%)，開啟 IG 準備發布限時動態！`);
+        }
+    }
+</script>
+</body>
+</html>
